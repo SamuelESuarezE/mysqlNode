@@ -7,8 +7,6 @@ export const getAllJobTitle = async({cargo} = {cargo: "Sales Rep"})=>{
     return result;
 }
 
-
-
 export const getAllLastNames = async() => {
     const [result] = await connection.query(`
     SELECT lastName FROM employees
@@ -38,4 +36,36 @@ export const getAll = async() => {
     FROM employees`)
 
     return result
+}
+
+// Ejercicios
+
+
+// **Lista de empleados que trabajan en una oficina específica (por ejemplo, '1'):**
+export const getAllEmployeesInAnOffice = async({officeCode} = {officeCode: '1'})=>{
+    
+    const [result] = await connection.execute(`select employeeNumber, officeCode FROM employees WHERE officeCode = ?`, [officeCode] );
+
+    result["count"] = result.length;
+    return result;
+}
+
+// Lista de todos los empleados con su jefe (si tienen)
+
+export const getAllEmployeesWithBoss= async()=>{
+    
+    const [result] = await connection.execute(`SELECT e.employeeNumber 'Numero', concat(e.lastName, ' ', e.firstName) 'empleado', concat(b.lastName, ' ', b.firstName) 'Jefe'
+    FROM employees e
+    INNER JOIN employees b on e.reportsTo = b.employeeNumber;`);
+
+    return result;
+}
+
+// **Listar todos los empleados junto con la oficina en la que trabajan:**
+
+export const getAllEmployeesWithOffice = async()=>{
+    
+    const [result] = await connection.execute(`select e.employeeNumber, concat(e.lastName, ' ', e.firstName) 'empleado', o.officeCode, o.city FROM employees e INNER JOIN offices o on e.officeCode = o.officeCode;`);
+
+    return result;
 }
